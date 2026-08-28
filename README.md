@@ -1,173 +1,328 @@
-💼 Liquidaciones de Sueldo — App de Escritorio para Chile
+# 💼 Liquidaciones de Sueldo — App de Escritorio para Chile
 
-Aplicación de escritorio desarrollada con Electron, orientada a la gestión, cálculo y emisión de liquidaciones de sueldo para trabajadores en Chile.
+Aplicación de escritorio desarrollada con **Electron** para la gestión, cálculo y emisión de **liquidaciones de sueldo**, adaptada a la normativa previsional y tributaria chilena.
 
-La aplicación permite administrar múltiples empresas, registrar trabajadores, calcular remuneraciones según parámetros previsionales y tributarios, y mantener un historial local de las liquidaciones emitidas.
+Permite administrar múltiples empresas, mantener un registro de trabajadores, calcular remuneraciones y generar un historial seguro de los pagos mensuales.
 
-⚠️ Importante: Los valores previsionales y tributarios pueden cambiar periódicamente. El sistema incluye un panel de parámetros para mantener actualizados los valores legales utilizados en los cálculos.
+---
 
-🚀 Características
-🏢 Multiempresa
+## 🚀 Características principales
 
-Administra diferentes empresas desde una única aplicación.
+### 🏢 Soporte Multiempresa
 
-Creación y edición de empresas.
-Identificación mediante RUT.
-Trabajadores asociados mediante empresaId.
-Historial independiente por empresa.
-Separación de información para evitar cruces de trabajadores y liquidaciones.
-👥 Gestión de Trabajadores
+Administra diferentes empresas desde una sola aplicación, manteniendo la información completamente separada.
 
-Mantén una ficha completa de cada trabajador.
+- Crear y administrar múltiples empresas.
+- Registrar RUT y datos de cada empresa.
+- Asociar trabajadores mediante `empresaId`.
+- Mantener historiales independientes.
+- Evitar la mezcla de trabajadores y liquidaciones entre empresas.
 
-Datos personales.
-RUT.
-Cargo.
-Tipo de contrato.
-Fecha de ingreso.
-Sueldo base.
-AFP.
-Sistema de salud: Fonasa / Isapre.
-Cargas familiares.
-Bonos.
-Horas extras.
-Información previsional.
-💰 Cálculo de Remuneraciones
+---
 
-El sistema permite automatizar diferentes componentes de una liquidación:
+### 👥 Fichas de Trabajadores
 
-Sueldo base.
-Horas extraordinarias.
-Gratificación legal.
-Bonos imponibles.
-Bonos no imponibles.
-Descuentos previsionales.
-Cotización de salud.
-Seguro de cesantía.
-Impuesto Único de Segunda Categoría.
-Total haberes.
-Total descuentos.
-Sueldo líquido.
-⚙️ Parámetros Legales Actualizables
+Permite mantener una ficha completa de cada trabajador.
 
-Incluye un módulo para administrar los valores utilizados en los cálculos.
+- Datos personales.
+- RUT.
+- Nombre completo.
+- Cargo.
+- Tipo de contrato.
+- Fecha de ingreso.
+- Sueldo base.
+- AFP.
+- Sistema de salud.
+- Fonasa / Isapre.
+- Cargas familiares.
+- Bonos.
+- Horas extras.
+- Información previsional.
+
+---
+
+### 💰 Cálculo automático
+
+El sistema permite calcular automáticamente los principales componentes de una liquidación:
+
+- Sueldo base.
+- Horas extraordinarias.
+- Gratificación legal.
+- Bonos imponibles.
+- Bonos no imponibles.
+- Descuentos previsionales.
+- AFP.
+- Salud.
+- Seguro de Cesantía.
+- Impuesto Único de Segunda Categoría.
+- Total de haberes.
+- Total de descuentos.
+- Sueldo líquido.
+
+---
+
+### ⚙️ Parámetros actualizables
+
+La aplicación cuenta con un panel para mantener actualizados los valores utilizados en los cálculos.
 
 Entre ellos:
 
-UTM.
-Ingreso Mínimo Mensual (IMM).
-Tasas AFP.
-Seguro de Cesantía.
-Valores de salud.
-Tramos del Impuesto Único de Segunda Categoría.
-Otros parámetros necesarios para el cálculo de remuneraciones.
+- UTM.
+- Ingreso Mínimo Mensual (IMM).
+- Tasas de AFP.
+- Seguro de Cesantía.
+- Parámetros de salud.
+- Tramos del Impuesto Único de Segunda Categoría.
+- Topes y valores previsionales.
+- Otros parámetros legales.
 
-Esto permite adaptar el sistema cuando cambien los valores legales.
+Esto permite actualizar los valores cuando cambien las condiciones legales.
 
-🗄️ Almacenamiento Local
+---
 
-La aplicación funciona con almacenamiento 100% local.
+### 🗄️ Almacenamiento local
 
-Los datos se almacenan en un archivo:
+La aplicación utiliza almacenamiento **100% local**.
 
+No requiere servidores externos ni servicios en la nube.
+
+Toda la información se guarda en un archivo local:
+
+```text
 base_datos_liquidaciones.json
+```
 
+La estructura general es:
 
-No es necesario contratar servidores ni utilizar una base de datos en la nube.
+```text
+base_datos_liquidaciones.json
+│
+├── ⚙️ Configuraciones
+│   ├── Parámetros tributarios
+│   ├── Parámetros previsionales
+│   └── Valores legales
+│
+├── 🏢 Empresas
+│   ├── Empresa 1
+│   ├── Empresa 2
+│   └── Empresa N
+│
+├── 👥 Trabajadores
+│   ├── Trabajadores Empresa 1
+│   ├── Trabajadores Empresa 2
+│   └── Trabajadores Empresa N
+│
+└── 📄 Liquidaciones
+    ├── Historial Empresa 1
+    ├── Historial Empresa 2
+    └── Historial Empresa N
+```
 
-La información contiene:
+---
 
-Configuraciones
-├── Parámetros tributarios
-├── Parámetros previsionales
-└── Valores legales
+## 🔒 Privacidad y seguridad
 
-Empresas
-├── Empresa 1
-├── Empresa 2
-└── Empresa N
+La aplicación está diseñada para mantener la información directamente en el equipo donde se encuentra instalada.
 
-Trabajadores
-├── Trabajadores asociados a Empresa 1
-├── Trabajadores asociados a Empresa 2
-└── Trabajadores asociados a Empresa N
+Los datos almacenados incluyen:
 
-Liquidaciones
-├── Historial Empresa 1
-├── Historial Empresa 2
-└── Historial Empresa N
+- 🏢 Empresas.
+- 👥 Trabajadores.
+- 💰 Remuneraciones.
+- 📄 Liquidaciones.
+- ⚙️ Parámetros.
 
-🖨️ Generación de Liquidaciones
+### ☁️ Sin nube
 
-Permite generar comprobantes de remuneraciones preparados para:
+La información permanece en el almacenamiento local:
 
-🖨️ Impresión.
-📄 Guardado como PDF.
-📁 Archivo histórico.
-👤 Entrega al trabajador.
-🛠️ Tecnologías
-Tecnología	Uso
-HTML5	Estructura de la interfaz
-CSS3	Diseño y estilos
-JavaScript	Lógica de la aplicación
-Electron	Aplicación de escritorio
-Node.js	Entorno de ejecución
-File System (fs)	Persistencia local
-JSON	Almacenamiento estructurado
-📋 Requisitos
+```text
+┌──────────────────────────────────────┐
+│       🖥️ Aplicación Electron        │
+├──────────────────────────────────────┤
+│                                      │
+│  🏢 Empresas                         │
+│  👥 Trabajadores                     │
+│  📄 Liquidaciones                    │
+│  ⚙️ Parámetros                       │
+│                                      │
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│       💾 Almacenamiento local        │
+├──────────────────────────────────────┤
+│                                      │
+│   base_datos_liquidaciones.json      │
+│                                      │
+└──────────────────────────────────────┘
+```
 
-Antes de comenzar, necesitas tener instalado:
+> 🔐 **Recomendación:** Debido a que el archivo local puede contener información personal y remuneraciones, se recomienda realizar copias de seguridad periódicas y proteger el acceso al equipo.
 
-Node.js
-npm
-Windows, Linux o macOS para desarrollo.
+---
 
-Puedes comprobar la instalación con:
+## 🖨️ Exportación de liquidaciones
 
+La aplicación permite generar comprobantes de liquidación preparados para:
+
+- 🖨️ Imprimir.
+- 📄 Guardar como PDF.
+- 📁 Mantener como respaldo.
+- 👤 Entregar al trabajador.
+
+---
+
+## 🧮 Flujo de cálculo
+
+De forma general, una liquidación puede seguir el siguiente proceso:
+
+```text
+                    ┌─────────────────────┐
+                    │   💰 SUELDO BASE    │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+              ▼                ▼                ▼
+      ┌──────────────┐ ┌──────────────┐ ┌───────────────┐
+      │ Horas Extras │ │ Gratificación│ │Bonos Imponibles│
+      └──────┬───────┘ └──────┬───────┘ └───────┬───────┘
+             │                │                 │
+             └────────────────┼─────────────────┘
+                              │
+                              ▼
+                 ┌─────────────────────────┐
+                 │  TOTAL HABERES          │
+                 │  IMPONIBLES             │
+                 └────────────┬────────────┘
+                              │
+             ┌────────────────┼─────────────────┐
+             │                │                 │
+             ▼                ▼                 ▼
+       ┌───────────┐    ┌────────────┐    ┌──────────────┐
+       │    AFP    │    │   SALUD    │    │   CESANTÍA   │
+       └─────┬─────┘    └─────┬──────┘    └──────┬───────┘
+             │                │                  │
+             └────────────────┼──────────────────┘
+                              │
+                              ▼
+                  ┌────────────────────────┐
+                  │ OTROS DESCUENTOS       │
+                  │ + IMPUESTO ÚNICO       │
+                  └────────────┬───────────┘
+                               │
+                               ▼
+                  ┌────────────────────────┐
+                  │  TOTAL DESCUENTOS      │
+                  └────────────┬───────────┘
+                               │
+                               ▼
+                  ┌────────────────────────┐
+                  │    💵 SUELDO LÍQUIDO   │
+                  └────────────────────────┘
+```
+
+> 📌 Los componentes específicos deben calcularse utilizando los parámetros legales correspondientes al período de la liquidación.
+
+---
+
+# 🛠️ Tecnologías utilizadas
+
+| Tecnología | Uso |
+|---|---|
+| 🟧 **HTML5** | Estructura de la interfaz |
+| 🎨 **CSS3** | Diseño y estilos |
+| 🟨 **JavaScript** | Lógica de la aplicación |
+| ⚡ **Electron** | Aplicación de escritorio |
+| 🟢 **Node.js** | Entorno de ejecución |
+| 📂 **File System (`fs`)** | Persistencia local |
+| 📄 **JSON** | Almacenamiento estructurado |
+
+---
+
+# 📋 Requisitos previos
+
+Antes de ejecutar el proyecto debes tener instalado:
+
+- **Node.js**
+- **npm**
+- Sistema operativo compatible con Electron.
+
+Puedes verificar la instalación ejecutando:
+
+```bash
 node --version
 npm --version
+```
 
-📦 Instalación
-1. Clonar el repositorio
+---
+
+# 📦 Instalación
+
+## 1. Clonar el repositorio
+
+```bash
 git clone https://github.com/tu-usuario/tu-repositorio.git
+```
 
-2. Entrar al proyecto
+## 2. Entrar a la carpeta del proyecto
+
+```bash
 cd tu-repositorio
+```
 
-3. Instalar dependencias
+## 3. Instalar dependencias
+
+```bash
 npm install
+```
 
-4. Ejecutar la aplicación
+## 4. Ejecutar la aplicación
+
+```bash
 npm start
+```
 
+La aplicación se abrirá en una ventana de escritorio de Electron.
 
-La aplicación se abrirá automáticamente en una ventana de escritorio de Electron.
+---
 
-🏗️ Crear ejecutable para Windows
+# 🏗️ Empaquetado para Windows
 
-Para generar una versión distribuible para Windows puedes utilizar electron-packager.
+Para generar un ejecutable independiente para Windows puedes utilizar **electron-packager**.
 
-Opción 1 — Usando npx
-npx electron-packager . "Liquidaciones" \
-  --platform=win32 \
-  --arch=x64 \
-  --out=dist
+### Usando `npx`
 
+```bash
+npx electron-packager . "Liquidaciones" --platform=win32 --arch=x64 --out=dist
+```
 
-El resultado se encontrará en:
+El ejecutable se generará dentro de:
 
+```text
 dist/
+│
 └── Liquidaciones-win32-x64/
+    │
     ├── Liquidaciones.exe
     ├── resources/
     └── ...
+```
 
+El archivo principal para iniciar la aplicación será:
 
-El archivo principal para ejecutar la aplicación será:
-
+```text
 Liquidaciones.exe
+```
 
-📁 Estructura sugerida del proyecto
+---
+
+# 📁 Estructura del proyecto
+
+Una estructura recomendada para el proyecto es:
+
+```text
 Liquidaciones/
 │
 ├── 📁 assets/
@@ -191,75 +346,28 @@ Liquidaciones/
 ├── 📄 base_datos_liquidaciones.json
 ├── 📄 LICENSE
 └── 📄 README.md
+```
 
+---
 
-💡 Se recomienda separar la lógica de cálculo, persistencia y presentación para facilitar el mantenimiento y las futuras actualizaciones.
+# 🗃️ Estructura de datos
 
-🔒 Privacidad y seguridad
+El sistema utiliza un archivo JSON local para almacenar la información.
 
-La aplicación está diseñada para trabajar con información almacenada localmente.
+### Empresa
 
-Los datos de:
+```json
+{
+  "id": "empresa-001",
+  "rut": "76.123.456-7",
+  "razonSocial": "Empresa de Ejemplo SpA",
+  "direccion": "Santiago, Chile"
+}
+```
 
-Empresas.
-Trabajadores.
-Remuneraciones.
-Liquidaciones.
-Parámetros.
+### Trabajador
 
-se mantienen en el equipo donde está instalada la aplicación.
-
-Sin nube
-┌─────────────────────────────┐
-│       Aplicación Electron   │
-│                             │
-│  Empresas                   │
-│  Trabajadores               │
-│  Liquidaciones              │
-│  Parámetros                 │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ base_datos_liquidaciones    │
-│           .json             │
-└─────────────────────────────┘
-
-
-🔐 Recomendación: Debido a que el archivo local puede contener información personal y remuneraciones, se recomienda realizar copias de seguridad y proteger el acceso al equipo.
-
-🧮 Flujo de cálculo
-
-De forma general, una liquidación puede seguir el siguiente flujo:
-
-Sueldo Base
-     │
-     ├── Horas Extras
-     ├── Gratificación
-     ├── Bonos Imponibles
-     │
-     ▼
-Total Haberes Imponibles
-     │
-     ├── AFP
-     ├── Salud
-     ├── Seguro de Cesantía
-     ├── Otros descuentos
-     └── Impuesto Único
-     │
-     ▼
-Total Descuentos
-     │
-     ▼
-Sueldo Líquido
-
-
-Los componentes específicos deben calcularse utilizando los parámetros legales correspondientes al período de la liquidación.
-
-📊 Ejemplo de información almacenada
-
-Un registro de trabajador podría tener una estructura similar a:
-
+```json
 {
   "id": "trabajador-001",
   "empresaId": "empresa-001",
@@ -267,6 +375,7 @@ Un registro de trabajador podría tener una estructura similar a:
   "nombre": "Juan Pérez",
   "cargo": "Desarrollador",
   "tipoContrato": "indefinido",
+  "fechaIngreso": "2026-01-01",
   "sueldoBase": 1200000,
   "afp": "AFP",
   "salud": {
@@ -274,15 +383,17 @@ Un registro de trabajador podría tener una estructura similar a:
   },
   "cargasFamiliares": 0
 }
+```
 
+### Liquidación
 
-Una liquidación podría mantener una estructura como:
-
+```json
 {
   "id": "liq-2026-08-001",
   "empresaId": "empresa-001",
   "trabajadorId": "trabajador-001",
   "periodo": "2026-08",
+
   "haberes": {
     "sueldoBase": 1200000,
     "horasExtras": 85000,
@@ -290,128 +401,270 @@ Una liquidación podría mantener una estructura como:
     "bonosImponibles": 50000,
     "bonosNoImponibles": 30000
   },
+
   "descuentos": {
     "afp": 145000,
     "salud": 84000,
-    "cesantia": 7200,
+    "seguroCesantia": 7200,
     "impuesto": 15000
   },
-  "liquido": 1213800
+
+  "totales": {
+    "totalHaberes": 1465000,
+    "totalDescuentos": 251200,
+    "sueldoLiquido": 1213800
+  }
 }
+```
 
+> ⚠️ Los valores utilizados en este ejemplo son únicamente ilustrativos y **no deben utilizarse para calcular remuneraciones reales**.
 
-Los valores anteriores son únicamente ilustrativos y no deben utilizarse como cálculo legal real.
+---
 
-🔄 Actualización de parámetros
+# ⚙️ Gestión de parámetros
 
-Los parámetros legales deberían asociarse al período correspondiente.
+Los parámetros legales pueden asociarse a un período determinado.
 
-Por ejemplo:
+Ejemplo:
 
+```json
 {
   "parametros": {
     "periodo": "2026-08",
+
     "utm": 0,
+
     "ingresoMinimoMensual": 0,
+
     "seguroCesantia": {
       "trabajador": 0,
       "empleador": 0
     },
+
     "afp": {},
+
     "impuestoSegundaCategoria": []
   }
 }
+```
 
+Mantener los parámetros asociados a un período permite generar liquidaciones históricas utilizando los valores correspondientes a cada mes.
 
-Esto permite mantener distintos conjuntos de parámetros por período y facilita la generación de liquidaciones históricas.
+---
 
-⚠️ Consideraciones legales
+# 🔄 Flujo general de la aplicación
 
-Esta aplicación es una herramienta informática para facilitar la gestión de remuneraciones.
+```text
+┌───────────────────┐
+│   🏢 EMPRESAS     │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ 👥 TRABAJADORES   │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ ⚙️ PARÁMETROS     │
+│   LEGALES         │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ 🧮 CÁLCULO        │
+│ REMUNERACIONES    │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ 📄 LIQUIDACIÓN     │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ 🖨️ PDF / IMPRESIÓN│
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ 🗄️ HISTORIAL       │
+└───────────────────┘
+```
 
-Los cálculos deben validarse con la normativa chilena vigente y los valores oficiales correspondientes al período de cada liquidación.
+---
 
-Antes de utilizar el software en un entorno productivo, se recomienda verificar especialmente:
+# 🔐 Seguridad
 
-Tasas previsionales vigentes.
-Valores de AFP.
-Cotización de salud.
-Seguro de cesantía.
-Ingreso Mínimo Mensual.
-UTM.
-Tramos y factores del Impuesto Único de Segunda Categoría.
-Topes imponibles.
-Gratificación legal.
-Horas extraordinarias.
-Situaciones contractuales especiales.
-🧪 Desarrollo
+Aunque la información se almacena localmente, se recomienda implementar buenas prácticas de seguridad.
 
-Para trabajar en el proyecto durante el desarrollo:
+### Recomendaciones
 
+- Realizar copias de seguridad periódicas.
+- Proteger el equipo mediante contraseña.
+- No compartir el archivo JSON públicamente.
+- Mantener el sistema operativo actualizado.
+- Evitar almacenar el archivo de datos dentro del repositorio Git.
+- Agregar `base_datos_liquidaciones.json` al `.gitignore`.
+
+Ejemplo:
+
+```gitignore
+node_modules/
+dist/
+base_datos_liquidaciones.json
+*.log
+.env
+```
+
+> 🔒 Si el proyecto será utilizado en producción, se recomienda implementar cifrado o una base de datos local segura en lugar de almacenar información sensible directamente en JSON.
+
+---
+
+# ⚠️ Consideraciones legales
+
+Esta aplicación es una herramienta informática destinada a facilitar la gestión y cálculo de remuneraciones.
+
+Los valores previsionales y tributarios pueden cambiar, por lo que **deben verificarse siempre con la normativa chilena vigente y las fuentes oficiales correspondientes al período de la liquidación**.
+
+Se recomienda validar especialmente:
+
+- Tasas de AFP.
+- Cotización de salud.
+- Seguro de Cesantía.
+- Ingreso Mínimo Mensual.
+- UTM.
+- Impuesto Único de Segunda Categoría.
+- Tramos y factores tributarios.
+- Topes imponibles.
+- Gratificación legal.
+- Horas extraordinarias.
+- Cargas familiares.
+- Situaciones contractuales especiales.
+
+> ⚠️ Este software no reemplaza la asesoría de un contador, profesional de remuneraciones o especialista tributario.
+
+---
+
+# 🧪 Desarrollo
+
+Para trabajar con el proyecto en modo desarrollo:
+
+```bash
 npm install
 npm start
+```
 
+Después de realizar cambios importantes en el código puede ser necesario reiniciar la aplicación Electron.
 
-Si realizas cambios en el código, reinicia Electron cuando sea necesario para cargar las modificaciones.
+---
 
-📌 Roadmap
+# 🗺️ Roadmap
 
-Algunas funcionalidades que podrían incorporarse en futuras versiones:
+Funcionalidades planificadas o posibles mejoras:
 
- Dashboard general de remuneraciones.
- Exportación masiva a PDF.
- Exportación a Excel.
- Generación de archivos para procesos previsionales.
- Control de asistencia.
- Registro de vacaciones.
- Registro de licencias.
- Finiquitos.
- Centralización de remuneraciones.
- Copias de seguridad automáticas.
- Restauración de respaldos.
- Cifrado de la base de datos local.
- Sistema de usuarios y permisos.
- Actualización de parámetros legales.
- Firma electrónica.
- Historial de modificaciones.
-🤝 Contribuciones
+- [ ] 📊 Dashboard de remuneraciones.
+- [ ] 📄 Exportación masiva a PDF.
+- [ ] 📊 Exportación a Excel.
+- [ ] 📁 Generación de archivos previsionales.
+- [ ] 🕐 Control de asistencia.
+- [ ] 🏖️ Gestión de vacaciones.
+- [ ] 🏥 Registro de licencias médicas.
+- [ ] 📑 Generación de finiquitos.
+- [ ] 💼 Centralización de remuneraciones.
+- [ ] 💾 Copias de seguridad automáticas.
+- [ ] ♻️ Restauración de respaldos.
+- [ ] 🔐 Cifrado de información sensible.
+- [ ] 👤 Sistema de usuarios.
+- [ ] 🔑 Roles y permisos.
+- [ ] 🔄 Actualización de parámetros legales.
+- [ ] ✍️ Firma electrónica.
+- [ ] 📝 Auditoría de modificaciones.
+- [ ] 📈 Reportes mensuales y anuales.
+
+---
+
+# 🤝 Contribuciones
 
 Las contribuciones son bienvenidas.
 
-Si quieres mejorar el proyecto:
+Si quieres colaborar:
 
-# 1. Haz un fork del proyecto
+### 1. Haz un Fork
 
-# 2. Crea una rama
+Realiza un Fork del proyecto desde GitHub.
+
+### 2. Crea una nueva rama
+
+```bash
 git checkout -b feature/nueva-funcionalidad
+```
 
-# 3. Realiza tus cambios
+### 3. Realiza tus cambios
 
-# 4. Guarda los cambios
+Modifica el código y prueba la aplicación.
+
+### 4. Agrega los cambios
+
+```bash
 git add .
+```
 
-# 5. Crea un commit
+### 5. Crea un commit
+
+```bash
 git commit -m "Agrega nueva funcionalidad"
+```
 
-# 6. Sube la rama
+### 6. Sube la rama
+
+```bash
 git push origin feature/nueva-funcionalidad
+```
 
-# 7. Abre un Pull Request
+### 7. Crea un Pull Request
 
-📄 Licencia
+Desde GitHub, crea un Pull Request explicando los cambios realizados.
 
-Este proyecto está disponible bajo la Licencia MIT.
+---
 
-Consulta el archivo LICENSE para conocer los términos completos de la licencia.
+# 📄 Licencia
 
-👨‍💻 Autor
+Este proyecto está bajo la **Licencia MIT**.
+
+Consulta el archivo [`LICENSE`](LICENSE) para conocer los términos completos de la licencia.
+
+---
+
+# 👨‍💻 Autor
 
 Desarrollado con ❤️ para facilitar la gestión de remuneraciones en Chile.
 
 Si este proyecto te resulta útil, considera darle una ⭐ al repositorio.
 
-⭐ Proyecto
+---
 
-Liquidaciones de Sueldo — Chile
+## ⭐ Liquidaciones de Sueldo — Chile
 
-Aplicación de escritorio para administrar empresas, trabajadores y liquidaciones de sueldo de forma local, organizada y segura.
+Aplicación de escritorio para administrar:
+
+```text
+🏢 Empresas
+      │
+      ▼
+👥 Trabajadores
+      │
+      ▼
+⚙️ Parámetros
+      │
+      ▼
+🧮 Cálculos
+      │
+      ▼
+📄 Liquidaciones
+      │
+      ▼
+🗄️ Historial
+```
+
+**Electron + JavaScript + JSON + almacenamiento local**
