@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liquidaciones de Sueldo</title>
+<style>
+  :root{
+    --paper:#f5f3ee;
+    --paper-alt:#efece4;
+    --ink:#242321;
+    --ink-soft:#5b5850;
+    --line:#d8d3c6;
+    --tinta:#2b4c5c;
+    --tinta-dark:#1c3542;
+    --sello:#a3491f;
+    --sello-soft:#f1e2d6;
+    --ok:#3c6e52;
+    --bad:#a3342a;
+    --card:#ffffff;
+    --radius:3px;
+    font-size:15px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{ font-family:Georgia,"Times New Roman",serif; }
+  .mono{ font-family:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace; font-variant-numeric:tabular-nums; }
+
+  header.topbar{
+    background:var(--tinta-dark);
+    color:#f2ece1;
+    padding:18px 28px;
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    border-bottom:4px solid var(--sello);
+  }
+  header.topbar h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:22px;
+    font-weight:normal;
+    letter-spacing:.3px;
+    margin:0;
+  }
+  header.topbar span.tag{
+    color:#c9b79e;
+    font-size:13px;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:2px;
+    background:var(--paper-alt);
+    padding:0 24px;
+    border-bottom:1px solid var(--line);
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    border:none;
+    background:transparent;
+    padding:13px 16px;
+    font-size:13.5px;
+    letter-spacing:.2px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+    font-family:inherit;
+  }
+  nav.tabs button:hover{ color:var(--ink); }
+  nav.tabs button.active{
+    color:var(--tinta-dark);
+    border-bottom-color:var(--sello);
+    font-weight:600;
+  }
+
+  main{ max-width:1080px; margin:0 auto; padding:26px 24px 80px; }
+  section.tab{ display:none; }
+  section.tab.active{ display:block; }
+
+  h2.section-title{
+    font-family:Georgia,serif;
+    font-size:19px;
+    font-weight:normal;
+    color:var(--tinta-dark);
+    margin:0 0 4px;
+  }
+  p.section-sub{ color:var(--ink-soft); font-size:13px; margin:0 0 20px; }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:18px;
+  }
+  .card h3{ margin:0 0 14px; font-size:14.5px; font-family:Georgia,serif; color:var(--tinta-dark); font-weight:normal; border-bottom:1px solid var(--line); padding-bottom:8px;}
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px 16px; }
+  .field{ display:flex; flex-direction:column; gap:4px; }
+  .field label{ font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); }
+  .field input, .field select{
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:8px 9px;
+    font-size:14px;
+    background:#fff;
+    color:var(--ink);
+    font-family:inherit;
+  }
+  .field input:focus, .field select:focus{ outline:2px solid var(--tinta); outline-offset:-1px; }
+  .checkbox-row{ display:flex; align-items:center; gap:8px; }
+  .checkbox-row label{ font-size:13px; color:var(--ink); }
+
+  button.btn{
+    border:1px solid var(--tinta-dark);
+    background:var(--tinta-dark);
+    color:#fdf9f2;
+    padding:9px 16px;
+    font-size:13.5px;
+    border-radius:2px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  button.btn:hover{ background:var(--tinta); }
+  button.btn.secondary{ background:transparent; color:var(--tinta-dark); }
+  button.btn.secondary:hover{ background:var(--paper-alt); }
+  button.btn.danger{ border-color:var(--bad); color:var(--bad); background:transparent; }
+  button.btn.danger:hover{ background:#fbecea; }
+  button.btn.sello{ background:var(--sello); border-color:var(--sello); }
+  button.btn.sello:hover{ background:#8a3a19; }
+  button.btn:disabled{ opacity:.45; cursor:not-allowed; }
+  button.small{ padding:5px 10px; font-size:12px; }
+
+  table.list{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.list th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.3px; color:var(--ink-soft); border-bottom:1px solid var(--line); padding:8px 8px; }
+  table.list td{ padding:9px 8px; border-bottom:1px solid #ece8dd; vertical-align:middle; }
+  table.list tr:hover td{ background:var(--paper-alt); }
+  .actions-cell{ display:flex; gap:6px; }
+  .empty-state{ color:var(--ink-soft); font-size:13.5px; padding:20px 4px; }
+
+  .row-line{ display:flex; gap:10px; align-items:flex-end; margin-bottom:8px; flex-wrap:wrap; }
+  .row-line .field{ flex:1; min-width:150px; }
+  .row-line button{ flex-shrink:0; }
+
+  /* Documento liquidación */
+  .documento{
+    background:#fffdf9;
+    border:1px solid var(--line);
+    padding:34px 38px;
+    max-width:720px;
+    margin:0 auto;
+  }
+  .doc-header{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--tinta-dark); padding-bottom:14px; margin-bottom:18px; }
+  .doc-header h2{ font-family:Georgia,serif; font-size:20px; margin:0 0 4px; color:var(--tinta-dark); }
+  .doc-header .empresa{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+  .doc-header .periodo{ text-align:right; font-size:13px; }
+  .doc-header .periodo .mes{ font-family:Georgia,serif; font-size:16px; text-transform:capitalize; color:var(--tinta-dark); }
+
+  .doc-trabajador{ display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; font-size:13px; margin-bottom:20px; }
+  .doc-trabajador div span.k{ color:var(--ink-soft); }
+
+  table.doc-table{ width:100%; border-collapse:collapse; font-size:13px; margin-bottom:6px; }
+  table.doc-table th{ text-align:left; font-size:11px; text-transform:uppercase; color:#fff; background:var(--tinta-dark); padding:6px 8px; letter-spacing:.3px; }
+  table.doc-table th.num, table.doc-table td.num{ text-align:right; }
+  table.doc-table td{ padding:6px 8px; border-bottom:1px solid #ece8dd; }
+  table.doc-table tfoot td{ font-weight:700; border-top:1px solid var(--ink); border-bottom:none; padding-top:8px; }
+
+  .doc-cols{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:8px; }
+  .doc-total-liquido{
+    margin-top:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--sello-soft);
+    border:1px solid var(--sello);
+    padding:12px 16px;
+    border-radius:2px;
+  }
+  .doc-total-liquido .lbl{ font-family:Georgia,serif; font-size:15px; color:var(--sello); }
+  .doc-total-liquido .val{ font-size:20px; font-weight:700; color:var(--sello); }
+  .doc-firma{ margin-top:56px; display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); }
+  .doc-firma .linea{ border-top:1px solid var(--ink); width:220px; text-align:center; padding-top:6px; }
+  .doc-note{ font-size:10.5px; color:var(--ink-soft); margin-top:22px; border-top:1px dashed var(--line); padding-top:8px; }
+
+  .doc-actions{ display:flex; gap:10px; justify-content:center; margin:18px 0; }
+
+  .bono-row, .desc-row{ display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+  .bono-row input[type=text], .desc-row input[type=text]{ flex:2; }
+  .bono-row input[type=number], .desc-row input[type=number]{ flex:1; }
+
+  .badge{ display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; }
+  .badge.indefinido{ background:#e2ede6; color:var(--ok); }
+  .badge.plazo_fijo{ background:#eee6d9; color:var(--sello); }
+  .badge.obra{ background:#e6e2ee; color:#5b4a9c; }
+
+  .params-note{ background:var(--sello-soft); border:1px solid var(--sello); border-radius:2px; padding:10px 14px; font-size:12.5px; color:#6b3115; margin-bottom:18px; }
+
+  select#lqTrabajador{ min-width:260px; }
+
+  @media print{
+    header.topbar, nav.tabs, .no-print{ display:none !important; }
+    body{ background:#fff; }
+    main{ padding:0; max-width:none; }
+    .documento{ border:none; padding:0; max-width:none; }
+    section.tab{ display:none !important; }
+    section.tab.printing{ display:block !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Liquidaciones de Sueldo</h1>
+  <div style="margin-left: auto; display:flex; gap:8px; align-items:center;">
+    <label for="empresaActiva" style="font-size:12px; color:#c9b79e;">Empresa activa:</label>
+    <select id="empresaActiva" style="padding: 6px; border-radius: 3px; border: none; background: var(--paper); color: var(--tinta-dark); font-weight: bold;"></select>
+    <button class="btn small" id="btnNuevaEmpresa" style="background:var(--sello); color:white; border-color:var(--sello);">+ Nueva</button>
+    <button class="btn small" id="btnEliminarEmpresa" style="background:var(--bad); color:white; border-color:var(--bad);">Eliminar</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="trabajadores">Trabajadores</button>
+  <button class="tab-btn" data-tab="liquidacion">Nueva liquidación</button>
+  <button class="tab-btn" data-tab="historial">Historial</button>
+  <button class="tab-btn" data-tab="parametros">Parámetros</button>
+</nav>
+
+<main>
+
+  <!-- TAB TRABAJADORES -->
+  <section class="tab active" id="tab-trabajadores">
+    <h2 class="section-title">Trabajadores</h2>
+    <p class="section-sub">Ficha de cada trabajador. Estos datos se reutilizan cada vez que generas una liquidación.</p>
+
+    <div class="card">
+      <table class="list" id="tblTrabajadores">
+        <thead>
+          <tr><th>Nombre</th><th>RUT</th><th>Cargo</th><th>Contrato</th><th>Sueldo base</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty-state" id="emptyTrabajadores" style="display:none;">Aún no agregas trabajadores. Usa el formulario de abajo para crear el primero.</div>
+    </div>
+
+    <div class="card">
+      <h3 id="formTrabajadorTitulo">Nuevo trabajador</h3>
+      <input type="hidden" id="wId">
+      <div class="grid">
+        <div class="field"><label>Nombre completo</label><input type="text" id="wNombre" placeholder="Juana Pérez Soto"></div>
+        <div class="field"><label>RUT</label><input type="text" id="wRut" placeholder="12.345.678-9"></div>
+        <div class="field"><label>Cargo</label><input type="text" id="wCargo" placeholder="Analista"></div>
+        <div class="field"><label>Fecha de ingreso</label><input type="date" id="wFechaIngreso"></div>
+        <div class="field"><label>Tipo de contrato</label>
+          <select id="wTipoContrato">
+            <option value="indefinido">Indefinido</option>
+            <option value="plazo_fijo">Plazo fijo</option>
+            <option value="obra">Por obra o faena</option>
+          </select>
+        </div>
+        <div class="field"><label>AFP</label><select id="wAfp"></select></div>
+        <div class="field"><label>Sistema de salud</label>
+          <select id="wSalud">
+            <option value="fonasa">Fonasa (7%)</option>
+            <option value="isapre">Isapre</option>
+          </select>
+        </div>
+        <div class="field" id="wIsapreMontoWrap" style="display:none;"><label>Plan Isapre (monto mensual $)</label><input type="number" id="wIsapreMonto" placeholder="Ej: 65000"></div>
+        <div class="field"><label>Cargas familiares</label><input type="number" id="wCargas" value="0" min="0"></div>
+        <div class="field"><label>Sueldo base ($)</label><input type="number" id="wSueldoBase" placeholder="Ej: 700000"></div>
+        <div class="field"><label>Asignación colación ($)</label><input type="number" id="wColacion" value="0"></div>
+        <div class="field"><label>Asignación movilización ($)</label><input type="number" id="wMovilizacion" value="0"></div>
+        <div class="field"><label>Jornada semanal (horas)</label><input type="number" id="wJornada" value="44"></div>
+      </div>
+      <div class="checkbox-row" style="margin-top:10px;">
+        <input type="checkbox" id="wGratificacion">
+        <label for="wGratificacion">Tiene derecho a gratificación legal (25% imponible, tope 4,75 IMM/año)</label>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button class="btn" id="btnGuardarTrabajador">Guardar trabajador</button>
+        <button class="btn secondary" id="btnCancelarTrabajador" style="display:none;">Cancelar edición</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB LIQUIDACION -->
+  <section class="tab" id="tab-liquidacion">
+    <h2 class="section-title">Nueva liquidación</h2>
+    <p class="section-sub">Elige un trabajador y el período. Ajusta horas extra, bonos o descuentos si corresponde.</p>
+
+    <div class="card">
+      <div class="grid">
+        <div class="field">
+          <label>Trabajador</label>
+          <select id="lqTrabajador"></select>
+        </div>
+        <div class="field"><label>Período (mes)</label><input type="month" id="lqPeriodo"></div>
+        <div class="field"><label>Días trabajados en el mes</label><input type="number" id="lqDias" value="30" min="1" max="31"></div>
+        <div class="field"><label>Horas extra trabajadas</label><input type="number" id="lqHorasExtra" value="0" min="0"></div>
+        <div class="field">
+          <label>¿Aplicar gratificación este mes?</label>
+          <select id="lqGratificacion">
+            <option value="auto">Según ficha del trabajador</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Bonos, comisiones u otros haberes</h3>
+      <div id="bonosList"></div>
+      <button class="btn secondary small" id="btnAddBono">+ agregar haber</button>
+    </div>
+
+    <div class="card">
+      <h3>Otros descuentos (anticipos, préstamos, etc.)</h3>
+      <div id="descList"></div>
+      <button class="btn secondary small" id="btnAddDesc">+ agregar descuento</button>
+    </div>
+
+    <div style="text-align:center; margin:20px 0;">
+      <button class="btn sello" id="btnCalcular">Calcular liquidación</button>
+    </div>
+
+    <div id="previewWrap" style="display:none;">
+      <div class="doc-actions no-print">
+        <button class="btn" id="btnGuardarLiq">Guardar en historial</button>
+        <button class="btn secondary" id="btnImprimirLiq">Imprimir / Guardar PDF</button>
+      </div>
+      <div class="documento" id="documentoPreview"></div>
+    </div>
+  </section>
+
+  <!-- TAB HISTORIAL -->
+  <section class="tab" id="tab-historial">
+    <h2 class="section-title">Historial de liquidaciones</h2>
+    <p class="section-sub">Todas las liquidaciones guardadas quedan aquí, aunque cambies después los datos del trabajador.</p>
+
+    <div class="card">
+      <div class="row-line">
+        <div class="field">
+          <label>Filtrar por trabajador</label>
+          <select id="histFiltroTrabajador"><option value="">Todos</option></select>
+        </div>
+      </div>
+      <table class="list" id="tblHistorial">
+        <thead><tr><th>Trabajador</th><th>Período</th><th>Total líquido</th><th>Generada</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty-state" id="emptyHistorial" style="display:none;">Todavía no hay liquidaciones guardadas.</div>
+    </div>
+
+    <div id="histPreviewWrap" style="display:none;">
+      <div class="doc-actions no-print">
+        <button class="btn secondary" id="btnImprimirHist">Imprimir / Guardar PDF</button>
+        <button class="btn danger" id="btnEliminarHist">Eliminar esta liquidación</button>
+      </div>
+      <div class="documento" id="documentoHistorial"></div>
+    </div>
+  </section>
+
+  <!-- TAB PARAMETROS -->
+  <section class="tab" id="tab-parametros">
+    <h2 class="section-title">Parámetros legales y de la empresa</h2>
+    <p class="section-sub">Estos valores cambian con el tiempo (UTM, sueldo mínimo, comisiones AFP). Revísalos periódicamente en sii.cl y spensiones.cl.</p>
+
+    <div class="params-note">Valores precargados con referencia a agosto de 2026. Antes de usar la app para pagos reales, confirma que sigan vigentes.</div>
+
+    <div class="card">
+      <h3>Datos de la empresa (aparecen en la liquidación)</h3>
+      <div class="grid">
+        <div class="field"><label>Razón social</label><input type="text" id="pEmpresaNombre"></div>
+        <div class="field"><label>RUT empresa</label><input type="text" id="pEmpresaRut"></div>
+        <div class="field"><label>Dirección</label><input type="text" id="pEmpresaDireccion"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Valores tributarios y previsionales generales</h3>
+      <div class="grid">
+        <div class="field"><label>Valor UTM ($)</label><input type="number" id="pUtm"></div>
+        <div class="field"><label>Ingreso mínimo mensual ($)</label><input type="number" id="pImm"></div>
+        <div class="field"><label>Cotización salud Fonasa (%)</label><input type="number" step="0.01" id="pSalud"></div>
+        <div class="field"><label>Seguro cesantía · trabajador indefinido (%)</label><input type="number" step="0.01" id="pCesTrab"></div>
+        <div class="field"><label>Seguro cesantía · empleador indefinido (%)</label><input type="number" step="0.01" id="pCesEmpInd"></div>
+        <div class="field"><label>Seguro cesantía · empleador plazo fijo/obra (%)</label><input type="number" step="0.01" id="pCesEmpPlazo"></div>
+        <div class="field"><label>SIS empleador (%)</label><input type="number" step="0.01" id="pSis"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Comisión AFP por administradora (%)</h3>
+      <div class="grid" id="afpParamsGrid"></div>
+    </div>
+
+    <div class="card">
+      <h3>Tramos impuesto único (2ª categoría)</h3>
+      <table class="list">
+        <thead><tr><th>Hasta (UTM)</th><th>Tasa (%)</th></tr></thead>
+        <tbody id="tramosBody"></tbody>
+      </table>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn" id="btnGuardarParams">Guardar parámetros</button>
+      <button class="btn secondary" id="btnResetParams">Restaurar valores por defecto</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ---------- Utilidades ---------- */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+const round = n => Math.round(n || 0);
+const clp = n => (round(n)).toLocaleString('es-CL', {style:'currency', currency:'CLP', maximumFractionDigits:0});
+const uid = () => 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const AFP_LABELS = {capital:'AFP Capital', cuprum:'AFP Cuprum', habitat:'AFP Habitat', modelo:'AFP Modelo', planvital:'AFP PlanVital', provida:'AFP Provida', uno:'AFP Uno'};
+
+const DEFAULT_SETTINGS = {
+  utm: 71649,
+  imm: 553553,
+  saludPct: 7,
+  cesantiaTrabajador: 0.6,
+  cesantiaEmpleadorIndefinido: 2.4,
+  cesantiaEmpleadorPlazoFijo: 3.0,
+  sis: 1.62,
+  afpRates: {capital:1.44, cuprum:1.44, habitat:1.27, modelo:0.58, planvital:1.16, provida:1.45, uno:0.46},
+  tramos: [
+    {limite:13.5, tasa:0}, {limite:30, tasa:4}, {limite:50, tasa:8}, {limite:70, tasa:13.5},
+    {limite:90, tasa:23}, {limite:120, tasa:30.4}, {limite:310, tasa:35}, {limite:null, tasa:40}
+  ],
+  empresas: [{ id: 'emp_1', nombre: 'Mi Primera Empresa', rut: '', direccion: '' }]
+};
+
+/* ---------- Almacenamiento local (Node.js / Electron) ---------- */
+const fs = require('fs');
+const path = require('path');
+const dbPath = path.join(__dirname, 'base_datos_liquidaciones.json');
+
+const Store = {
+  load(key, fallback){ 
+    try {
+      if(fs.existsSync(dbPath)){
+        const rawData = fs.readFileSync(dbPath, 'utf-8');
+        const db = JSON.parse(rawData);
+        return db[key] !== undefined ? db[key] : fallback;
+      }
+    } catch(e) { console.error("Error leyendo DB:", e); }
+    return fallback; 
+  },
+  save(key, val){ 
+    try {
+      let db = {};
+      if(fs.existsSync(dbPath)){
+        db = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+      }
+      db[key] = val;
+      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2)); 
+    } catch(e) { console.error("Error guardando DB:", e); }
+  }
+};
+
+let workers = Store.load('liq_workers', []);
+let history = Store.load('liq_history', []);
+let settings = Object.assign({}, DEFAULT_SETTINGS, Store.load('liq_settings', {}));
+settings.afpRates = Object.assign({}, DEFAULT_SETTINGS.afpRates, settings.afpRates || {});
+if(!settings.tramos || !settings.tramos.length) settings.tramos = DEFAULT_SETTINGS.tramos;
+
+function saveWorkers(){ Store.save('liq_workers', workers); }
+function saveHistory(){ Store.save('liq_history', history); }
+function saveSettings(){ Store.save('liq_settings', settings); }
+
+/* ---------- Manejo Multiempresa (con limpiador de errores) ---------- */
+if(!settings.empresas || !Array.isArray(settings.empresas) || settings.empresas.length === 0) {
+  settings.empresas = [{ id: 'emp_1', nombre: 'Mi Primera Empresa', rut: '', direccion: '' }];
+}
+// Esto limpia los "undefined" que quedaron guardados por error en tu JSON
+settings.empresas.forEach(emp => {
+  if(emp.nombre === 'undefined' || !emp.nombre) emp.nombre = 'Empresa sin nombre';
+  if(emp.rut === 'undefined') emp.rut = '';
+  if(emp.direccion === 'undefined') emp.direccion = '';
+});
+
+let activeEmpresaId = Store.load('liq_active_empresa', settings.empresas[0].id);
+
+function getEmpresaActiva() {
+  let emp = settings.empresas.find(e => e.id === activeEmpresaId);
+  if (!emp) {
+    emp = settings.empresas[0];
+    activeEmpresaId = emp.id;
+    Store.save('liq_active_empresa', activeEmpresaId);
+  }
+  return emp;
+}
+
+function renderEmpresaSelector() {
+  const sel = $('#empresaActiva');
+  if(!sel) return;
+  sel.innerHTML = settings.empresas.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+  sel.value = activeEmpresaId;
+}
+
+if($('#empresaActiva')){
+  $('#empresaActiva').addEventListener('change', (e) => {
+    activeEmpresaId = e.target.value;
+    Store.save('liq_active_empresa', activeEmpresaId);
+    renderTrabajadores();
+    refreshLqTrabajadorSelect();
+    loadParamsToForm();
+    renderHistorial();
+  });
+}
+
+if($('#btnNuevaEmpresa')){
+  $('#btnNuevaEmpresa').addEventListener('click', () => {
+    const nueva = { id: uid(), nombre: 'Nueva Empresa', rut: '', direccion: '' };
+    settings.empresas.push(nueva);
+    activeEmpresaId = nueva.id;
+    
+    saveSettings();
+    Store.save('liq_active_empresa', activeEmpresaId);
+    
+    // Recargamos la interfaz limpia para evitar bloqueos
+    location.reload(); 
+  });
+}
+
+if($('#btnEliminarEmpresa')){
+  $('#btnEliminarEmpresa').addEventListener('click', () => {
+    
+    if(settings.empresas.length <= 1) {
+      alert('No puedes eliminar la única empresa.');
+      return;
+    }
+    
+    if(confirm('¿Estás seguro de eliminar esta empresa? Perderás a sus trabajadores y su historial.')) {
+      // 1. Quitamos la empresa actual de la lista
+      settings.empresas = settings.empresas.filter(e => e.id !== activeEmpresaId);
+      
+      // 2. Seleccionamos automáticamente la primera empresa que quede
+      activeEmpresaId = settings.empresas[0].id;
+      
+      // 3. Guardamos los cambios en el archivo físico .json
+      saveSettings();
+      Store.save('liq_active_empresa', activeEmpresaId);
+      
+      // 4. SOLUCIÓN AL CONGELAMIENTO: 
+      // Recargamos la ventana completa. Esto resetea el motor de clics de Electron
+      // y vuelve a dibujar la interfaz desde cero con la nueva empresa seleccionada.
+      location.reload();
+    }
+    
+  });
+}
+
+/* ---------- Navegación por pestañas ---------- */
+$$('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    $$('.tab-btn').forEach(b=>b.classList.remove('active'));
+    $$('.tab').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    $('#tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='historial') renderHistorial();
+    if(btn.dataset.tab==='liquidacion') refreshLqTrabajadorSelect();
+  });
+});
+
+/* ---------- Render selects AFP ---------- */
+function fillAfpSelect(sel){
+  sel.innerHTML = Object.keys(AFP_LABELS).map(k=>`<option value="${k}">${AFP_LABELS[k]} (${settings.afpRates[k]}%)</option>`).join('');
+}
+
+/* ---------- Trabajadores: formulario ---------- */
+$('#wSalud').addEventListener('change', ()=>{
+  $('#wIsapreMontoWrap').style.display = $('#wSalud').value === 'isapre' ? 'flex' : 'none';
+});
+
+function limpiarFormTrabajador(){
+  $('#wId').value = '';
+  $('#wNombre').value=''; $('#wRut').value=''; $('#wCargo').value='';
+  $('#wFechaIngreso').value=''; $('#wTipoContrato').value='indefinido';
+  fillAfpSelect($('#wAfp'));
+  $('#wSalud').value='fonasa'; $('#wIsapreMonto').value=''; $('#wIsapreMontoWrap').style.display='none';
+  $('#wCargas').value=0; $('#wSueldoBase').value=''; $('#wColacion').value=0; $('#wMovilizacion').value=0;
+  $('#wJornada').value=44; $('#wGratificacion').checked=false;
+  $('#formTrabajadorTitulo').textContent='Nuevo trabajador';
+  $('#btnCancelarTrabajador').style.display='none';
+}
+
+$('#btnGuardarTrabajador').addEventListener('click', ()=>{
+  const nombre = $('#wNombre').value.trim();
+  const sueldoBase = Number($('#wSueldoBase').value);
+  if(!nombre){ alert('Ingresa el nombre del trabajador.'); return; }
+  if(!sueldoBase || sueldoBase<=0){ alert('Ingresa un sueldo base válido.'); return; }
+
+  const id = $('#wId').value || uid();
+  const worker = {
+    id,
+    empresaId: activeEmpresaId,
+    nombre,
+    rut: $('#wRut').value.trim(),
+    cargo: $('#wCargo').value.trim(),
+    fechaIngreso: $('#wFechaIngreso').value,
+    tipoContrato: $('#wTipoContrato').value,
+    afp: $('#wAfp').value,
+    sistemaSalud: $('#wSalud').value,
+    isapreMonto: Number($('#wIsapreMonto').value)||0,
+    cargasFamiliares: Number($('#wCargas').value)||0,
+    sueldoBase,
+    colacion: Number($('#wColacion').value)||0,
+    movilizacion: Number($('#wMovilizacion').value)||0,
+    jornadaSemanal: Number($('#wJornada').value)||44,
+    gratificacionLegal: $('#wGratificacion').checked
+  };
+  const idx = workers.findIndex(w=>w.id===id);
+  if(idx>=0) workers[idx]=worker; else workers.push(worker);
+  saveWorkers();
+  limpiarFormTrabajador();
+  renderTrabajadores();
+});
+
+$('#btnCancelarTrabajador').addEventListener('click', limpiarFormTrabajador);
+
+function editarTrabajador(id){
+  const w = workers.find(w=>w.id===id);
+  if(!w) return;
+  $('#wId').value=w.id; $('#wNombre').value=w.nombre; $('#wRut').value=w.rut||'';
+  $('#wCargo').value=w.cargo||''; $('#wFechaIngreso').value=w.fechaIngreso||'';
+  $('#wTipoContrato').value=w.tipoContrato;
+  fillAfpSelect($('#wAfp')); $('#wAfp').value=w.afp;
+  $('#wSalud').value=w.sistemaSalud;
+  $('#wIsapreMontoWrap').style.display = w.sistemaSalud==='isapre' ? 'flex':'none';
+  $('#wIsapreMonto').value=w.isapreMonto||'';
+  $('#wCargas').value=w.cargasFamiliares||0;
+  $('#wSueldoBase').value=w.sueldoBase;
+  $('#wColacion').value=w.colacion||0;
+  $('#wMovilizacion').value=w.movilizacion||0;
+  $('#wJornada').value=w.jornadaSemanal||44;
+  $('#wGratificacion').checked=!!w.gratificacionLegal;
+  $('#formTrabajadorTitulo').textContent='Editar trabajador';
+  $('#btnCancelarTrabajador').style.display='inline-block';
+  window.scrollTo({top: document.querySelector('#formTrabajadorTitulo').offsetTop - 20, behavior:'smooth'});
+}
+
+function eliminarTrabajador(id){
+  if(!confirm('¿Eliminar este trabajador? El historial no se borra.')) return;
+  workers = workers.filter(w=>w.id!==id);
+  saveWorkers();
+  renderTrabajadores();
+}
+
+function renderTrabajadores(){
+  const tbody = $('#tblTrabajadores tbody');
+  tbody.innerHTML = '';
+  const trabajadoresEmpresa = workers.filter(w => (w.empresaId || 'emp_1') === activeEmpresaId);
+  $('#emptyTrabajadores').style.display = trabajadoresEmpresa.length ? 'none' : 'block';
+  
+  trabajadoresEmpresa.forEach(w=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${w.nombre}</td>
+      <td class="mono">${w.rut||'—'}</td>
+      <td>${w.cargo||'—'}</td>
+      <td><span class="badge ${w.tipoContrato}">${labelContrato(w.tipoContrato)}</span></td>
+      <td class="mono">${clp(w.sueldoBase)}</td>
+      <td class="actions-cell">
+        <button class="btn secondary small" data-edit="${w.id}">Editar</button>
+        <button class="btn danger small" data-del="${w.id}">Eliminar</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>editarTrabajador(b.dataset.edit)));
+  tbody.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>eliminarTrabajador(b.dataset.del)));
+}
+function labelContrato(t){ return t==='indefinido'?'Indefinido': t==='plazo_fijo'?'Plazo fijo':'Por obra'; }
+
+/* ---------- Nueva liquidación ---------- */
+let bonos = [];
+let descuentos = [];
+
+function refreshLqTrabajadorSelect(){
+  const sel = $('#lqTrabajador');
+  const current = sel.value;
+  const trabajadoresEmpresa = workers.filter(w => (w.empresaId || 'emp_1') === activeEmpresaId);
+  sel.innerHTML = trabajadoresEmpresa.map(w=>`<option value="${w.id}">${w.nombre} — ${w.cargo||''}</option>`).join('') || '<option value="">Agrega un trabajador primero</option>';
+  if(current) sel.value = current;
+  if(!$('#lqPeriodo').value){
+    const d = new Date();
+    $('#lqPeriodo').value = d.toISOString().slice(0,7);
+  }
+}
+
+function renderBonos(){
+  $('#bonosList').innerHTML = bonos.map((b,i)=>`
+    <div class="bono-row">
+      <input type="text" placeholder="Descripción" value="${b.desc}" data-bi="${i}" data-field="desc">
+      <input type="number" placeholder="Monto" value="${b.monto}" data-bi="${i}" data-field="monto">
+      <label style="font-size:12px; display:flex; align-items:center; gap:4px;"><input type="checkbox" ${b.imponible?'checked':''} data-bi="${i}" data-field="imponible"> Imponible</label>
+      <button class="btn danger small" data-brm="${i}">Quitar</button>
+    </div>`).join('');
+  $('#bonosList').querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const i = Number(inp.dataset.bi), f = inp.dataset.field;
+      bonos[i][f] = f==='imponible' ? inp.checked : (f==='monto'? Number(inp.value) : inp.value);
+    });
+  });
+  $('#bonosList').querySelectorAll('[data-brm]').forEach(b=> b.addEventListener('click', ()=>{ bonos.splice(Number(b.dataset.brm),1); renderBonos(); }));
+}
+$('#btnAddBono').addEventListener('click', ()=>{ bonos.push({desc:'', monto:0, imponible:true}); renderBonos(); });
+
+function renderDescuentos(){
+  $('#descList').innerHTML = descuentos.map((d,i)=>`
+    <div class="desc-row">
+      <input type="text" placeholder="Descripción" value="${d.desc}" data-di="${i}" data-field="desc">
+      <input type="number" placeholder="Monto" value="${d.monto}" data-di="${i}" data-field="monto">
+      <button class="btn danger small" data-drm="${i}">Quitar</button>
+    </div>`).join('');
+  $('#descList').querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const i = Number(inp.dataset.di), f = inp.dataset.field;
+      descuentos[i][f] = f==='monto'? Number(inp.value): inp.value;
+    });
+  });
+  $('#descList').querySelectorAll('[data-drm]').forEach(b=> b.addEventListener('click', ()=>{ descuentos.splice(Number(b.dataset.drm),1); renderDescuentos(); }));
+}
+$('#btnAddDesc').addEventListener('click', ()=>{ descuentos.push({desc:'', monto:0}); renderDescuentos(); });
+
+/* ---------- Cálculo y Renderizado ---------- */
+function calcularImpuestoUnico(base, settings){
+  if(base<=0) return 0;
+  const utm = settings.utm;
+  let anteriorPesos = 0;
+  let impuesto = 0;
+  for(const t of settings.tramos){
+    const limitePesos = (t.limite===null || t.limite===undefined) ? Infinity : t.limite*utm;
+    if(base > anteriorPesos){
+      const tramoBase = Math.min(base, limitePesos) - anteriorPesos;
+      if(tramoBase>0) impuesto += tramoBase * (t.tasa/100);
+    }
+    anteriorPesos = limitePesos;
+    if(base <= limitePesos) break;
+  }
+  return round(impuesto);
+}
+
+function calcularLiquidacion(worker, vars){
+  const dias = Math.min(31, Math.max(1, Number(vars.diasTrabajados)||30));
+  const factorDias = Math.min(1, dias/30);
+  const sueldoBaseProp = round(worker.sueldoBase * factorDias);
+  const colacionProp = round((worker.colacion||0) * factorDias);
+  const movilizacionProp = round((worker.movilizacion||0) * factorDias);
+  const horasMensuales = (worker.jornadaSemanal||44) * (52/12);
+  const valorHoraOrdinaria = horasMensuales>0 ? worker.sueldoBase / horasMensuales : 0;
+  const valorHoraExtra = valorHoraOrdinaria * 1.5;
+  const totalHorasExtra = round(valorHoraExtra * (Number(vars.horasExtraCantidad)||0));
+
+  let bonosImponibles = 0, bonosNoImponibles = 0;
+  const bonosDetalle = (vars.bonos||[]).filter(b=>b.desc || b.monto);
+  bonosDetalle.forEach(b=>{
+    const m = Number(b.monto)||0;
+    if(b.imponible) bonosImponibles += m; else bonosNoImponibles += m;
+  });
+
+  let aplicaGrat = worker.gratificacionLegal;
+  if(vars.gratificacionOverride === 'si') aplicaGrat = true;
+  if(vars.gratificacionOverride === 'no') aplicaGrat = false;
+  let gratificacion = 0;
+  if(aplicaGrat){
+    const baseGrat = sueldoBaseProp + totalHorasExtra + bonosImponibles;
+    const tope = (4.75 * settings.imm) / 12;
+    gratificacion = round(Math.min(baseGrat * 0.25, tope));
+  }
+
+  const totalImponible = sueldoBaseProp + totalHorasExtra + bonosImponibles + gratificacion;
+  const totalNoImponible = colacionProp + movilizacionProp + bonosNoImponibles;
+  const totalHaberes = totalImponible + totalNoImponible;
+
+  const afpRate = settings.afpRates[worker.afp] ?? 0;
+  const descuentoAFP = round(totalImponible * (10 + afpRate) / 100);
+  let descuentoSalud;
+  if(worker.sistemaSalud === 'isapre' && worker.isapreMonto>0){
+    descuentoSalud = Math.max(round(totalImponible*settings.saludPct/100), round(worker.isapreMonto));
+  } else {
+    descuentoSalud = round(totalImponible * settings.saludPct/100);
+  }
+
+  const descuentoCesantia = worker.tipoContrato === 'indefinido' ? round(totalImponible * settings.cesantiaTrabajador/100) : 0;
+  const baseTributable = Math.max(0, totalImponible - descuentoAFP - descuentoSalud - descuentoCesantia);
+  const impuesto = calcularImpuestoUnico(baseTributable, settings);
+
+  const descDetalle = (vars.descuentos||[]).filter(d=>d.desc || d.monto);
+  const otrosDescuentos = descDetalle.reduce((s,d)=> s + (Number(d.monto)||0), 0);
+  const totalDescuentos = descuentoAFP + descuentoSalud + descuentoCesantia + impuesto + otrosDescuentos;
+  const totalLiquido = totalHaberes - totalDescuentos;
+
+  const sisEmpleador = round(totalImponible * settings.sis/100);
+  const cesantiaEmpleadorRate = worker.tipoContrato === 'indefinido' ? settings.cesantiaEmpleadorIndefinido : settings.cesantiaEmpleadorPlazoFijo;
+  const cesantiaEmpleador = round(totalImponible * cesantiaEmpleadorRate/100);
+
+  return {
+    dias, sueldoBaseProp, colacionProp, movilizacionProp,
+    totalHorasExtra, horasExtraCantidad: Number(vars.horasExtraCantidad)||0,
+    bonosDetalle, bonosImponibles, bonosNoImponibles,
+    gratificacion, totalImponible, totalNoImponible, totalHaberes,
+    afpRate, descuentoAFP, descuentoSalud, descuentoCesantia, baseTributable, impuesto,
+    descDetalle, otrosDescuentos, totalDescuentos, totalLiquido,
+    sisEmpleador, cesantiaEmpleador, cesantiaEmpleadorRate
+  };
+}
+
+function mesLabel(periodoStr){
+  if(!periodoStr) return '';
+  const [y,m] = periodoStr.split('-');
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return `${meses[Number(m)-1]} de ${y}`;
+}
+
+function renderDocumento(worker, vars, calc){
+  const emp = getEmpresaActiva();
+  return `
+    <div class="doc-header">
+      <div>
+        <h2>Liquidación de Sueldo</h2>
+        <div class="empresa">
+          ${emp.nombre ? `<strong>${emp.nombre}</strong><br>`:''}
+          ${emp.rut ? `RUT: ${emp.rut}<br>`:''}
+          ${emp.direccion ? `${emp.direccion}`:''}
+        </div>
+      </div>
+      <div class="periodo">
+        <div class="mono">Días trabajados: ${calc.dias}/30</div>
+        <div class="mes">${mesLabel(vars.periodo)}</div>
+      </div>
+    </div>
+    <div class="doc-trabajador">
+      <div><span class="k">Trabajador:</span> <strong>${worker.nombre}</strong></div>
+      <div><span class="k">RUT:</span> <span class="mono">${worker.rut||'—'}</span></div>
+      <div><span class="k">Cargo:</span> ${worker.cargo||'—'}</div>
+      <div><span class="k">Contrato:</span> ${labelContrato(worker.tipoContrato)}</div>
+      <div><span class="k">AFP:</span> ${AFP_LABELS[worker.afp]}</div>
+      <div><span class="k">Salud:</span> ${worker.sistemaSalud==='isapre'?'Isapre':'Fonasa'}</div>
+      <div><span class="k">Cargas familiares:</span> ${worker.cargasFamiliares||0}</div>
+      <div><span class="k">Fecha de ingreso:</span> ${worker.fechaIngreso||'—'}</div>
+    </div>
+    <div class="doc-cols">
+      <table class="doc-table">
+        <thead><tr><th>Haberes</th><th class="num">Monto</th></tr></thead>
+        <tbody>
+          <tr><td>Sueldo base</td><td class="num mono">${clp(calc.sueldoBaseProp)}</td></tr>
+          ${calc.totalHorasExtra ? `<tr><td>Horas extra (${calc.horasExtraCantidad} hrs)</td><td class="num mono">${clp(calc.totalHorasExtra)}</td></tr>`:''}
+          ${calc.gratificacion ? `<tr><td>Gratificación legal</td><td class="num mono">${clp(calc.gratificacion)}</td></tr>`:''}
+          ${calc.bonosDetalle.filter(b=>b.imponible).map(b=>`<tr><td>${b.desc||'Bono imponible'}</td><td class="num mono">${clp(b.monto)}</td></tr>`).join('')}
+          ${calc.colacionProp ? `<tr><td>Colación</td><td class="num mono">${clp(calc.colacionProp)}</td></tr>`:''}
+          ${calc.movilizacionProp ? `<tr><td>Movilización</td><td class="num mono">${clp(calc.movilizacionProp)}</td></tr>`:''}
+          ${calc.bonosDetalle.filter(b=>!b.imponible).map(b=>`<tr><td>${b.desc||'Haber no imponible'}</td><td class="num mono">${clp(b.monto)}</td></tr>`).join('')}
+        </tbody>
+        <tfoot><tr><td>Total haberes</td><td class="num mono">${clp(calc.totalHaberes)}</td></tr></tfoot>
+      </table>
+      <table class="doc-table">
+        <thead><tr><th>Descuentos</th><th class="num">Monto</th></tr></thead>
+        <tbody>
+          <tr><td>AFP (10% + ${calc.afpRate}% com.)</td><td class="num mono">${clp(calc.descuentoAFP)}</td></tr>
+          <tr><td>Salud (${worker.sistemaSalud==='isapre'?'Isapre':'Fonasa 7%'})</td><td class="num mono">${clp(calc.descuentoSalud)}</td></tr>
+          ${calc.descuentoCesantia ? `<tr><td>Seguro cesantía (0,6%)</td><td class="num mono">${clp(calc.descuentoCesantia)}</td></tr>`:''}
+          <tr><td>Impuesto único</td><td class="num mono">${clp(calc.impuesto)}</td></tr>
+          ${calc.descDetalle.map(d=>`<tr><td>${d.desc||'Otro descuento'}</td><td class="num mono">${clp(d.monto)}</td></tr>`).join('')}
+        </tbody>
+        <tfoot><tr><td>Total descuentos</td><td class="num mono">${clp(calc.totalDescuentos)}</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="doc-total-liquido">
+      <div class="lbl">Total líquido a pagar</div>
+      <div class="val mono">${clp(calc.totalLiquido)}</div>
+    </div>
+    <div class="doc-firma">
+      <div class="linea">Firma trabajador(a)</div>
+      <div class="linea">Firma empleador</div>
+    </div>
+  `;
+}
+
+let ultimoCalculo = null;
+$('#btnCalcular').addEventListener('click', ()=>{
+  const workerId = $('#lqTrabajador').value;
+  const worker = workers.find(w=>w.id===workerId);
+  if(!worker){ alert('Selecciona un trabajador.'); return; }
+  const vars = { periodo: $('#lqPeriodo').value, diasTrabajados: $('#lqDias').value, horasExtraCantidad: $('#lqHorasExtra').value, gratificacionOverride: $('#lqGratificacion').value, bonos, descuentos };
+  const calc = calcularLiquidacion(worker, vars);
+  ultimoCalculo = {worker, vars, calc};
+  $('#documentoPreview').innerHTML = renderDocumento(worker, vars, calc);
+  $('#previewWrap').style.display = 'block';
+  $('#previewWrap').scrollIntoView({behavior:'smooth'});
+});
+
+$('#btnGuardarLiq').addEventListener('click', (e)=>{
+  if(!ultimoCalculo) return;
+  const {worker, vars, calc} = ultimoCalculo;
+  history.push({
+    id: uid(),
+    empresaId: activeEmpresaId,
+    workerId: worker.id,
+    workerNombre: worker.nombre,
+    periodo: vars.periodo,
+    generada: new Date().toISOString(),
+    worker: JSON.parse(JSON.stringify(worker)),
+    vars, calc,
+    settingsSnapshot: JSON.parse(JSON.stringify(settings))
+  });
+  
+  saveHistory();
+
+  // Animación de éxito sin congelar la pantalla
+  const btn = e.target;
+  const textoOriginal = btn.textContent;
+  btn.textContent = '¡Guardada en el historial!';
+  btn.style.backgroundColor = 'var(--ok)';
+  btn.style.borderColor = 'var(--ok)';
+  btn.style.color = '#ffffff';
+  
+  setTimeout(() => {
+    btn.textContent = textoOriginal;
+    btn.style.backgroundColor = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 2000);
+});
+
+$('#btnImprimirLiq').addEventListener('click', ()=>{
+  $('#tab-liquidacion').classList.add('printing');
+  window.print();
+  setTimeout(()=> $('#tab-liquidacion').classList.remove('printing'), 300);
+});
+
+/* ---------- Historial ---------- */
+function refreshHistFiltro(){
+  const sel = $('#histFiltroTrabajador');
+  const current = sel.value;
+  const trabajadoresEmpresa = workers.filter(w => (w.empresaId || 'emp_1') === activeEmpresaId);
+  sel.innerHTML = '<option value="">Todos</option>' + trabajadoresEmpresa.map(w=>`<option value="${w.id}">${w.nombre}</option>`).join('');
+  sel.value = current || '';
+}
+$('#histFiltroTrabajador').addEventListener('change', renderHistorial);
+
+function renderHistorial(){
+  refreshHistFiltro();
+  const filtro = $('#histFiltroTrabajador').value;
+  const list = history.filter(h => ((h.empresaId || 'emp_1') === activeEmpresaId) && (!filtro || h.workerId===filtro))
+                      .sort((a,b)=> new Date(b.generada)-new Date(a.generada));
+  const tbody = $('#tblHistorial tbody');
+  tbody.innerHTML = '';
+  $('#emptyHistorial').style.display = list.length ? 'none' : 'block';
+  list.forEach(h=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${h.workerNombre}</td>
+      <td>${mesLabel(h.periodo)}</td>
+      <td class="mono">${clp(h.calc.totalLiquido)}</td>
+      <td class="mono">${new Date(h.generada).toLocaleDateString('es-CL')}</td>
+      <td class="actions-cell">
+        <button class="btn secondary small" data-view="${h.id}">Ver</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('[data-view]').forEach(b=> b.addEventListener('click', ()=>verHistorial(b.dataset.view)));
+}
+
+let historialActualId = null;
+function verHistorial(id){
+  const h = history.find(x=>x.id===id);
+  if(!h) return;
+  historialActualId = id;
+  $('#documentoHistorial').innerHTML = renderDocumento(h.worker, h.vars, h.calc);
+  $('#histPreviewWrap').style.display = 'block';
+  $('#histPreviewWrap').scrollIntoView({behavior:'smooth'});
+}
+
+$('#btnImprimirHist').addEventListener('click', ()=>{
+  $('#tab-historial').classList.add('printing');
+  window.print();
+  setTimeout(()=> $('#tab-historial').classList.remove('printing'), 300);
+});
+
+$('#btnEliminarHist').addEventListener('click', ()=>{
+  if(!historialActualId) return;
+  if(!confirm('¿Eliminar esta liquidación?')) return;
+  history = history.filter(h=>h.id!==historialActualId);
+  saveHistory();
+  $('#histPreviewWrap').style.display = 'none';
+  renderHistorial();
+});
+
+/* ---------- Parámetros ---------- */
+function renderAfpParams(){
+  $('#afpParamsGrid').innerHTML = Object.keys(AFP_LABELS).map(k=>`
+    <div class="field">
+      <label>${AFP_LABELS[k]}</label>
+      <input type="number" step="0.01" id="afpRate_${k}" value="${settings.afpRates[k]}">
+    </div>`).join('');
+}
+
+function renderTramos(){
+  $('#tramosBody').innerHTML = settings.tramos.map((t,i)=>`
+    <tr>
+      <td><input type="number" step="0.1" style="width:100px;" data-ti="${i}" data-tf="limite" value="${t.limite===null?'':t.limite}"></td>
+      <td><input type="number" step="0.1" style="width:100px;" data-ti="${i}" data-tf="tasa" value="${t.tasa}"></td>
+    </tr>`).join('');
+  $('#tramosBody').querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const i = Number(inp.dataset.ti), f = inp.dataset.tf;
+      if(f==='limite') settings.tramos[i].limite = inp.value===''? null : Number(inp.value);
+      else settings.tramos[i].tasa = Number(inp.value);
+    });
+  });
+}
+
+function loadParamsToForm(){
+  const emp = getEmpresaActiva();
+  $('#pEmpresaNombre').value = emp.nombre || '';
+  $('#pEmpresaRut').value = emp.rut || '';
+  $('#pEmpresaDireccion').value = emp.direccion || '';
+  
+  $('#pUtm').value = settings.utm;
+  $('#pImm').value = settings.imm;
+  $('#pSalud').value = settings.saludPct;
+  $('#pCesTrab').value = settings.cesantiaTrabajador;
+  $('#pCesEmpInd').value = settings.cesantiaEmpleadorIndefinido;
+  $('#pCesEmpPlazo').value = settings.cesantiaEmpleadorPlazoFijo;
+  $('#pSis').value = settings.sis;
+  renderAfpParams();
+  renderTramos();
+}
+
+$('#btnGuardarParams').addEventListener('click', (e) => {
+  const emp = getEmpresaActiva();
+  emp.nombre = $('#pEmpresaNombre').value.trim();
+  emp.rut = $('#pEmpresaRut').value.trim();
+  emp.direccion = $('#pEmpresaDireccion').value.trim();
+  
+  settings.utm = Number($('#pUtm').value)||settings.utm;
+  settings.imm = Number($('#pImm').value)||settings.imm;
+  settings.saludPct = Number($('#pSalud').value)||settings.saludPct;
+  settings.cesantiaTrabajador = Number($('#pCesTrab').value)||0;
+  settings.cesantiaEmpleadorIndefinido = Number($('#pCesEmpInd').value)||0;
+  settings.cesantiaEmpleadorPlazoFijo = Number($('#pCesEmpPlazo').value)||0;
+  settings.sis = Number($('#pSis').value)||0;
+  
+  Object.keys(AFP_LABELS).forEach(k=>{
+    const v = Number($('#afpRate_'+k).value);
+    if(!isNaN(v)) settings.afpRates[k] = v;
+  });
+  
+  saveSettings();
+  renderEmpresaSelector();
+  renderTrabajadores();
+
+  // SOLUCIÓN: Efecto visual en el botón en lugar de alert()
+  const btn = e.target;
+  const textoOriginal = btn.textContent;
+  btn.textContent = '¡Parámetros guardados!';
+  btn.style.backgroundColor = 'var(--ok)'; // Color verde definido en tu CSS
+  btn.style.borderColor = 'var(--ok)';
+  btn.style.color = '#ffffff';
+
+  setTimeout(() => {
+    btn.textContent = textoOriginal;
+    btn.style.backgroundColor = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 2000);
+});
+
+$('#btnResetParams').addEventListener('click', ()=>{
+  if(!confirm('¿Restaurar parámetros generales a los valores por defecto?')) return;
+  const res = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  res.empresas = settings.empresas; // Preservar las empresas actuales
+  settings = res;
+  saveSettings();
+  loadParamsToForm();
+});
+
+/* ---------- Inicio ---------- */
+function init(){
+  renderEmpresaSelector();
+  fillAfpSelect($('#wAfp'));
+  renderTrabajadores();
+  refreshLqTrabajadorSelect();
+  renderBonos();
+  renderDescuentos();
+  loadParamsToForm();
+  renderHistorial();
+}
+init();
+</script>
+</body>
+</html>
